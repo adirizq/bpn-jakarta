@@ -77,7 +77,7 @@
     </div>
             
         <!-- Modal -->
-        <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden value="true">
+        <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="modal-notification" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered " role="document">
                 <div class="modal-content">
                     
@@ -185,15 +185,15 @@
             </div>
         </div>
 
-        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden value="true">
+        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <form action="{{ route('archive.store') }}" method="post">
+                <form action="{{ route('archive.store') }}" method="post" autocomplete="off">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel">Add New Archive</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden value=""="true">&times;</span>
+                            <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
@@ -201,7 +201,7 @@
                         <div class="form-group" id="barcode_number_form">
                             <label class="h5">Nomor Barcode</label>
                             <div class="input-group input-group-alternative">
-                                <input required type="number" class="form-control form-control-alternative" id="barcode_number" name="barcode_number" placeholder="Nomor Barcode">
+                                <input required type="number" class="form-control form-control-alternative" id="barcode_number" name="barcode_number" placeholder="Nomor Barcode" autocomplete="off">
                             </div>
                             @error('barcode_number')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -230,7 +230,7 @@
                         <div class="form-group" id="rack_location_form">
                             <label class="h5">Lokasi Rak</label>
                             <div class="input-group input-group-alternative">
-                                <input required type="text" class="form-control form-control-alternative" id="rack_location" name="rack_location" placeholder="Lokasi Rak">
+                                <input required type="text" class="form-control form-control-alternative" id="rack_location" name="rack_location" placeholder="Lokasi Rak" autocomplete="off">
                             </div>
                             @error('rack_location')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -258,7 +258,7 @@
                         <div class="form-group" id="sk_number_form">
                             <label class="h5">Nomor SK</label>
                             <div class="input-group input-group-alternative">
-                                <input required type="text" class="form-control form-control-alternative" id="sk_number" name="sk_number" placeholder="Nomor SK">
+                                <input required type="text" class="form-control form-control-alternative" id="sk_number" name="sk_number" placeholder="Nomor SK" autocomplete="off">
                             </div>
                             @error('sk_number')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -270,7 +270,7 @@
                         <div class="form-group" id="name_form">
                             <label class="h5">Nama</label>
                             <div class="input-group input-group-alternative">
-                                <input required type="text" class="form-control form-control-alternative" id="name" name="name" placeholder="Nama">
+                                <input required type="text" class="form-control form-control-alternative" id="name" name="name" placeholder="Nama" autocomplete="off">
                             </div>
                             @error('name')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -282,7 +282,7 @@
                         <div class="form-group" id="address_form">
                             <label class="h5">Alamat</label>
                             <div class="input-group input-group-alternative">
-                                <input required type="text" class="form-control form-control-alternative" id="address" name="address" placeholder="Alamat">
+                                <input required type="text" class="form-control form-control-alternative" id="address" name="address" placeholder="Alamat" autocomplete="off">
                             </div>
                             @error('address')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -400,7 +400,7 @@
                         <div class="form-group" id="description_form">
                             <label class="h5">Keterangan</label>
                             <div class="input-group input-group-alternative">
-                                <input type="text" class="form-control form-control-alternative" id="description" name="description" placeholder="Keterangan Berkas">
+                                <input type="text" class="form-control form-control-alternative" id="description" name="description" placeholder="Keterangan Berkas" autocomplete="off">
                             </div>
                             @error('description')
                                 <span class="invalid-feedback d-inline" role="alert">
@@ -465,17 +465,16 @@
     @endif
 
     <script type="text/javascript" src="{{ asset('argon/vendor/data-tables/datatables.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('/assets/js/select2.min.js') }}"></script>
 
     <script>
         $(document).ready(function() {
+            $('#barcode_number')[0].focus({ preventScroll: true })
+
             $('select[name=type_id] option[value=1]').attr('selected','selected');
             $('#type_id').val(1).change()
 
             $('select[name=physical_status_id] option[value=1]').attr('selected','selected');
             $('#physical_status_id').val(1).change()
-
-            $('.select2').select2();
 
             $('#detailModal').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget) // Button that triggered the modal

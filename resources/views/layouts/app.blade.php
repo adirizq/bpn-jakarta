@@ -24,15 +24,6 @@
         <!-- Data Tables -->
         <link rel="stylesheet" type="text/css" href="{{ asset('argon/vendor/data-tables/datatables.min.css') }}"/>
 
-        <!-- Select2 -->
-        <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/select2.min.css') }}"/>
-
-        <style>
-            .row {
-                margin:0px;
-            }
-        </style>
-
     </head>
     <body class="{{ $class ?? '' }}">
         @auth()
