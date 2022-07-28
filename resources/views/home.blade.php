@@ -178,6 +178,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" id="btn_delete" data-toggle="modal" class="btn btn-danger" data-target="#deleteModal">Delete</button>
+                        <a type="button" href="" id="btn_edit" class="btn btn-warning">Edit</a>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
 
@@ -500,6 +501,7 @@
 
                 modal.find('.modal-footer #btn_delete').data('id', button.data('id'))
                 modal.find('.modal-footer #btn_delete').data('name', button.data('sk'))
+                modal.find('.modal-footer #btn_edit').attr("href",  "{{ url('archive') }}" + "/" + button.data('id') + "/edit")
             })
 
             $('#deleteModal').on('show.bs.modal', function (event) {
@@ -613,6 +615,17 @@
                     $('#right_type_id').removeAttr('required');
                     $('#scan_status_id').removeAttr('required');
                     $('#physical_status_id').removeAttr('required');
+
+                    $('#rack_location').val("");
+                    $('#name').val("");
+                    $('#address').val("");
+                    $('#kelurahan').val("");
+                    $('#kecamatan').val("");
+                    $('#kab_kota').val("");
+                    $('#provinsi').val("");
+                    $('#right_type_id').val("");
+                    $('#scan_status_id').val("");
+                    $('#physical_status_id').val("");
 
                     $('#rack_location_form').hide();
                     $('#name_form').hide();

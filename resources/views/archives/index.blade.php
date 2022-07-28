@@ -65,6 +65,7 @@
                                         <td>{{ checkNull($archive->kelurahan) }}</td>
                                         <td>{{ checkNullCategory($archive->user) }}</td>
                                         <td>
+                                            <a href="{{ route('archive.edit', $archive->id) }}"  class="btn btn-sm btn-warning">Edit</a>
                                             <button type="button" data-toggle="modal" class="btn btn-sm btn-info" data-target="#detailModal" 
                                                 data-barcode="{{ checkNull($archive->barcode_number) }}" 
                                                 data-rack="{{ checkNull($archive->rack_location) }}" 

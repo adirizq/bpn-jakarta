@@ -46,7 +46,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/getDistricts/{id}', [AreaController::class, 'getDistricts']);
 	Route::get('/getVillages/{id}', [AreaController::class, 'getVillages']);
 
-	Route::resource('archive', ArchiveController::class)->except('create', 'edit', 'show', 'update');
+	Route::resource('archive', ArchiveController::class)->except('create', 'show');
 });
 
 Route::group(['middleware' => 'admin'], function () {
@@ -63,8 +63,5 @@ Route::group(['middleware' => 'admin'], function () {
 	Route::resource('condition', ConditionController::class)->except('create', 'edit', 'show');
 });
 
-Route::get('test', function(){
-	return Hash::make('bpnk4nwildki');
-});
 
 

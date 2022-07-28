@@ -24,6 +24,18 @@
         <!-- Data Tables -->
         <link rel="stylesheet" type="text/css" href="{{ asset('argon/vendor/data-tables/datatables.min.css') }}"/>
 
+        <style>
+            .form-control {
+                color: black;
+                font-style: bold;
+            }
+
+            .form-control:focus {
+                color: black;
+                font-style: bold;
+            }
+        </style>
+
     </head>
     <body class="{{ $class ?? '' }}">
         @auth()

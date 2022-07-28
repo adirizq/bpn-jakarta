@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Type;
 use App\Models\Archive;
+use App\Models\Condition;
+use App\Models\RightType;
+use App\Models\ScanStatus;
+use App\Models\PhysicalStatus;
 use Illuminate\Http\Request;
 
 class ArchiveController extends Controller
@@ -97,7 +102,16 @@ class ArchiveController extends Controller
      */
     public function edit(Archive $archive)
     {
-        //
+        return view('archives.edit', [
+            'archive' => $archive,
+            'title' => 'edit archive',
+            'conditions' => Condition::all(),
+            'types' => Type::all(),
+            'provinsi' => \Indonesia::allProvinces(),
+            'rights' => RightType::all(),
+            'scans' => ScanStatus::all(),
+            'physicals' => PhysicalStatus::all(),
+        ]);
     }
 
     /**
@@ -109,7 +123,60 @@ class ArchiveController extends Controller
      */
     public function update(Request $request, Archive $archive)
     {
-        //
+        $validatedData = null;
+
+        if ($request->condition_id == 4) {
+            $validatedData = $request->validate([
+                'barcode_number' => 'required|numeric',
+                'type_id' => 'required',
+                'condition_id' => 'required',
+                'sk_number' => 'nullable',
+                'description' => 'nullable',
+            ]);
+
+            $validatedData['name'] = null;
+            $validatedData['address'] = null;
+            $validatedData['kelurahan'] = null;
+            $validatedData['kecamatan'] = null;
+            $validatedData['kab_kota'] = null;
+            $validatedData['provinsi'] = null;
+            $validatedData['right_type_id'] = null;
+            $validatedData['scan_status_id'] = null;
+            $validatedData['physical_status_id'] = null;
+        } else {
+            $validatedData = $request->validate([
+                'barcode_number' => 'required|numeric',
+                'rack_location' => 'required',
+                'condition_id' => 'required',
+                'type_id' => 'required',
+                'sk_number' => 'required',
+                'name' => 'required',
+                'address' => 'required',
+                'kelurahan' => 'required',
+                'kecamatan' => 'required',
+                'kab_kota' => 'required',
+                'provinsi' => 'required',
+                'right_type_id' => 'required',
+                'scan_status_id' => 'required',
+                'physical_status_id' => 'required',
+                'description' => 'nullable',
+            ]);
+
+            $validatedData['provinsi'] = \Indonesia::findProvince($validatedData['provinsi'])->name;
+            $validatedData['kab_kota'] = \Indonesia::findCity($validatedData['kab_kota'])->name;
+            $validatedData['kecamatan'] = \Indonesia::findDistrict($validatedData['kecamatan'])->name;
+            $validatedData['kelurahan'] = \Indonesia::findVillage($validatedData['kelurahan'])->name;
+        }
+
+        Archive::where('id', $archive->id)->update($validatedData);
+
+        if(auth()->user()->role == 0){
+            return redirect()->route('home')->with('success', 'Archive successfully edited');
+        } else {
+            return redirect()->route('archive.index')->with('success', 'Archive successfully edited');
+        }
+
+        
     }
 
     /**
