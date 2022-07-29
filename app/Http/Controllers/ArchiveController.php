@@ -9,6 +9,7 @@ use App\Models\RightType;
 use App\Models\ScanStatus;
 use App\Models\PhysicalStatus;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class ArchiveController extends Controller
 {
@@ -20,7 +21,6 @@ class ArchiveController extends Controller
     public function index()
     {
         return view('archives.index')->with([
-            'archives' => Archive::with('type', 'user')->get(),
             'title' => 'archives',
         ]);
     }
@@ -168,6 +168,8 @@ class ArchiveController extends Controller
             $validatedData['kelurahan'] = \Indonesia::findVillage($validatedData['kelurahan'])->name;
         }
 
+        $validatedData['edited_by'] = auth()->user()->id;
+
         Archive::where('id', $archive->id)->update($validatedData);
 
         if(auth()->user()->role == 0){
@@ -189,6 +191,44 @@ class ArchiveController extends Controller
     {
         Archive::destroy($archive->id);
         return back()->with('success', 'Archive successfully deleted');
+    }
+
+
+    public function jsonArchives() {
+        $archives = Archive::latest()->with(['type', 'rightType', 'scanStatus', 'physicalStatus', 'condition', 'editedBy',  'user'])->get();
+
+        $dataTables = datatables()->of($archives)
+            ->addColumn('action', function($archives) {
+                $btn = "<a href='" . route('archive.edit', $archives->id) . "'  class='btn btn-sm btn-warning'>Edit</a>";
+                $btn .= "
+                    <button type='button' data-toggle='modal' class='btn btn-sm btn-info' data-target='#detailModal' 
+                        data-barcode='" . checkNull($archives->barcode_number) . "' 
+                        data-rack='" . checkNull($archives->rack_location) . "' 
+                        data-type='" . checkNullCategory($archives->type) . "' 
+                        data-sk='" . checkNull($archives->sk_number) . "' 
+                        data-name='" . checkNull($archives->name) . "' 
+                        data-address='" . checkNull($archives->address) . "' 
+                        data-provinsi='" . checkNull($archives->provinsi) . "' 
+                        data-kab='" . checkNull($archives->kab_kota) . "' 
+                        data-kecamatan='" . checkNull($archives->kecamatan) . "' 
+                        data-kelurahan='" . checkNull($archives->kelurahan) . "' 
+                        data-right='" . checkNullCategory($archives->rightType) . "' 
+                        data-scan='" . checkNullCategory($archives->scanStatus) . "' 
+                        data-physical='" . checkNullCategory($archives->physicalStatus) . "' 
+                        data-condition='" . checkNullCategory($archives->condition) . "' 
+                        data-description='" . checkNull($archives->description) . "' 
+                        data-user='" . checkNullCategory($archives->user) . "' 
+                        data-edited='" . checkNullCategory($archives->editedBy) . "' 
+                        data-created='" . checkNull($archives->created_at->toDateString()) . "'>Show Detail
+                    </button>
+                ";
+                
+                return $btn;
+            })
+            ->rawColumns(['action'])
+            ->toJson();
+
+        return $dataTables;
     }
 
 

@@ -47,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/getVillages/{id}', [AreaController::class, 'getVillages']);
 
 	Route::resource('archive', ArchiveController::class)->except('create', 'show');
+	Route::get('json-archives', [ArchiveController::class, 'jsonArchives'])->name('json_archive');
 });
 
 Route::group(['middleware' => 'admin'], function () {

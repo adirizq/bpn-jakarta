@@ -51,4 +51,8 @@ class Archive extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function editedBy() {
+        return $this->belongsTo(User::class, 'edited_by');
+    }
 }
