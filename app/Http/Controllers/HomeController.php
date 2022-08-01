@@ -47,4 +47,12 @@ class HomeController extends Controller
             'physicals' => PhysicalStatus::all(),
         ]);
     }
+
+    public function jsonArchives() {
+        $archives = Archive::latest()->with(['type', 'rightType', 'scanStatus', 'physicalStatus', 'condition', 'editedBy',  'user'])->where('user_id', auth()->user()->id)->get();
+
+        $dataTables = datatables()->of($archives)->toJson();
+
+        return $dataTables;
+    }
 }

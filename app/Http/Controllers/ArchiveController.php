@@ -48,8 +48,10 @@ class ArchiveController extends Controller
         if ($request->condition_id == 4) {
             $validatedData = $request->validate([
                 'barcode_number' => 'required|numeric',
-                'type_id' => 'required',
                 'condition_id' => 'required',
+                'type_id' => 'required',
+                'sk_number' => 'nullable',
+                'description' => 'nullable',
             ]);
         } else {
             $validatedData = $request->validate([

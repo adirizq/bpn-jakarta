@@ -32,7 +32,7 @@
                     @endif
 
                     <div class="table-responsive px-4 mb-3 mt-5">
-                        <table id="dataTable2" class="table align-items-center table-flush">
+                        <table id="dataTable" class="table align-items-center table-flush">
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col text-center">Barcode</th>
@@ -175,17 +175,9 @@
     <script>
         $(document).ready( function () {
             $('#dataTable').DataTable({
-                language: {
-                    paginate: {
-                        next: '<i class="fa fa-angle-right"></i>',
-                        previous: '<i class="fa fa-angle-left"></i>'
-                    }
-                }
-            });
-
-            $('#dataTable2').DataTable({
                 processing: true,
                 serverSide: true,
+                aaSorting: [],
                 ajax: '/json-archives',
                 columns: [
                     {data: 'barcode_number', name: 'barcode_number', defaultContent: "[No Data]"},
@@ -206,7 +198,6 @@
                 }
             });
         } );
-
     </script>
 
     <script>

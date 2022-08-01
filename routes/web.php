@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
 
 	Route::resource('archive', ArchiveController::class)->except('create', 'show');
 	Route::get('json-archives', [ArchiveController::class, 'jsonArchives'])->name('json_archive');
+	Route::get('json-archives-member', [HomeController::class, 'jsonArchives'])->name('json_archive_member');
 });
 
 Route::group(['middleware' => 'admin'], function () {
