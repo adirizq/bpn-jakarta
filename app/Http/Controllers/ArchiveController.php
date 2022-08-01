@@ -247,7 +247,7 @@ class ArchiveController extends Controller
 
 
     public function jsonArchives() {
-        $archives = Archive::latest()->with(['type', 'rightType', 'scanStatus', 'physicalStatus', 'condition', 'editedBy',  'user'])->get();
+        $archives = Archive::latest()->with(['type:id,name', 'rightType:id,name', 'scanStatus:id,name', 'physicalStatus:id,name', 'condition:id,name', 'editedBy:id,name',  'user:id,name'])->get();
 
         $dataTables = datatables()->of($archives)
             ->addColumn('action', function($archives) {
@@ -337,6 +337,8 @@ class ArchiveController extends Controller
             'barcode_number' => 'required|numeric',
             'type_id' => 'required',
             'condition_id' => 'required',
+            'sk_number' => 'nullable',
+            'description' => 'nullable',
             'user_id' => 'required',
         ]);
 
@@ -364,7 +366,7 @@ class ArchiveController extends Controller
             'sk_number' => request('sk_number'),
             'action' => 'CREATE',
             'detail' => 'Menyimpan Data Arsip Baru',
-            'actor_name' => '[ID: ' . auth('api')->user()->id . '] ' . auth('api')->user()->name
+            'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
         ];
 
         if($archive) {
@@ -380,7 +382,7 @@ class ArchiveController extends Controller
             'sk_number' => $archive->sk_number,
             'action' => 'DELETE',
             'detail' => 'Menghapus Data Arsip',
-            'actor_name' => '[ID: ' . auth('api')->user()->id . '] ' . auth('api')->user()->name
+            'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
         ];
 
         $success = $archive->delete(); 

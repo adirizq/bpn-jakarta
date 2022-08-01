@@ -476,6 +476,7 @@
                 processing: true,
                 serverSide: true,
                 lengthChange: false,
+                pagingType: 'simple_numbers',
                 aaSorting: [],
                 ajax: '/json-archives-member',
                 columns: [
