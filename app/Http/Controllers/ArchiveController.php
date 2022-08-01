@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Type;
 use App\Models\Archive;
 use App\Models\Condition;
+use App\Models\Log;
 use App\Models\RightType;
 use App\Models\ScanStatus;
 use App\Models\PhysicalStatus;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -80,7 +82,18 @@ class ArchiveController extends Controller
 
         $validatedData['user_id'] = auth()->user()->id;
 
-        Archive::create($validatedData);
+        $log = [
+            'barcode_number' => $validatedData['barcode_number'],
+            'sk_number' => $validatedData['sk_number'],
+            'action' => 'CREATE',
+            'detail' => 'Menyimpan Data Arsip Baru ',
+            'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
+        ];
+
+        $archive = Archive::create($validatedData);
+        if($archive) {
+            Log::create($log);
+        }
 
         return back()->with('success', 'New archive successfully created');
     }
@@ -172,7 +185,29 @@ class ArchiveController extends Controller
 
         $validatedData['edited_by'] = auth()->user()->id;
 
-        Archive::where('id', $archive->id)->update($validatedData);
+        $log = [
+            'barcode_number' => request('barcode_number'),
+            'sk_number' => request('sk_number'),
+            'action' => 'UPDATE',
+            'detail' => 'Mengubah/Memperbarui Data Arsip',
+            'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
+        ];
+
+        $status = Archive::where('id', $archive->id)->update($validatedData);
+
+        $updatedArchive = Archive::find($archive->id);
+
+        foreach ($archive->getAttributes() as $key => $value) {
+            if($value != $updatedArchive->$key) {
+                if($key != 'updated_at'){
+                    $log['detail'] .= ' [' . $key . ': ' . $value . '  >  ' . $updatedArchive->$key . '] ';
+                }
+            }
+        };
+
+        if($status) {
+            Log::create($log);
+        }
 
         if(auth()->user()->role == 0){
             return redirect()->route('home')->with('success', 'Archive successfully edited');
@@ -191,7 +226,22 @@ class ArchiveController extends Controller
      */
     public function destroy(Archive $archive)
     {
-        Archive::destroy($archive->id);
+        $log = [
+            'barcode_number' => $archive->barcode_number,
+            'sk_number' => $archive->sk_number,
+            'action' => 'DELETE',
+            'detail' => 'Menghapus Data Arsip',
+            'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
+        ];
+
+        $success = Archive::destroy($archive->id);
+
+        $success = $archive->delete(); 
+
+        if($success) {
+            Log::create($log);
+        }
+
         return back()->with('success', 'Archive successfully deleted');
     }
 
@@ -203,7 +253,7 @@ class ArchiveController extends Controller
             ->addColumn('action', function($archives) {
                 $btn = "<a href='" . route('archive.edit', $archives->id) . "'  class='btn btn-sm btn-warning'>Edit</a>";
                 $btn .= "
-                    <button type='button' data-toggle='modal' class='btn btn-sm btn-info' data-target='#detailModal' 
+                    <button type='button' data-toggle='modal' class='btn btn-sm btn-info mt-2' data-target='#detailModal' 
                         data-barcode='" . checkNull($archives->barcode_number) . "' 
                         data-rack='" . checkNull($archives->rack_location) . "' 
                         data-type='" . checkNullCategory($archives->type) . "' 
@@ -289,8 +339,8 @@ class ArchiveController extends Controller
             'condition_id' => 'required',
             'user_id' => 'required',
         ]);
-    
-        return Archive::create([
+
+        $archive = Archive::create([
             'barcode_number' => request('barcode_number'),
             'rack_location' => request('rack_location'),
             'type_id' => request('type_id'),
@@ -308,13 +358,39 @@ class ArchiveController extends Controller
             'description' => request('description'),
             'user_id' => request('user_id'),
         ]);
+
+        $log = [
+            'barcode_number' => request('barcode_number'),
+            'sk_number' => request('sk_number'),
+            'action' => 'CREATE',
+            'detail' => 'Menyimpan Data Arsip Baru',
+            'actor_name' => '[ID: ' . auth('api')->user()->id . '] ' . auth('api')->user()->name
+        ];
+
+        if($archive) {
+            Log::create($log);
+        }
+    
+        return $archive;
     }
 
     public function apiDestroy(Archive $archive){
-       $success = $archive->delete(); 
+        $log = [
+            'barcode_number' => $archive->barcode_number,
+            'sk_number' => $archive->sk_number,
+            'action' => 'DELETE',
+            'detail' => 'Menghapus Data Arsip',
+            'actor_name' => '[ID: ' . auth('api')->user()->id . '] ' . auth('api')->user()->name
+        ];
 
-       return [
-        'success' => $success
-       ];
+        $success = $archive->delete(); 
+
+        if($success) {
+            Log::create($log);
+        }
+
+        return [
+            'success' => $success
+        ];
     }
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\AreaController;
 use App\Http\Controllers\ConditionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\PhysicalStatusController;
 use App\Http\Controllers\RightTypeController;
 use App\Http\Controllers\ScanStatusController;
@@ -52,6 +53,8 @@ Route::group(['middleware' => 'auth'], function () {
 });
 
 Route::group(['middleware' => 'admin'], function () {
+	Route::get('json-logs', [LogController::class, 'jsonLogs'])->name('json_logs');
+
 	Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
 	Route::resource('user', UserController::class)->except('show', 'update', 'create', 'edit');
@@ -63,6 +66,7 @@ Route::group(['middleware' => 'admin'], function () {
 	Route::resource('scanStatus', ScanStatusController::class)->except('create', 'edit', 'show');
 	Route::resource('physicalStatus', PhysicalStatusController::class)->except('create', 'edit', 'show');
 	Route::resource('condition', ConditionController::class)->except('create', 'edit', 'show');
+	Route::resource('log', LogController::class)->except('create', 'show', 'edit', 'update', 'destroy');
 });
 
 

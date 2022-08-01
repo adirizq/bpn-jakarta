@@ -29,7 +29,7 @@
                     
                     <div class="col-12"></div>
 
-                    <div class="table-responsive px-4 mb-3">
+                    <div class="table-responsive px-4 mb-3" id="table_home">
                         <table id="dataTable" class="table align-items-center table-flush w-100">
                             <thead class="thead-light">
                                 <tr class="d-none">

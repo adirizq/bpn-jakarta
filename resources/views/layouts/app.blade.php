@@ -35,7 +35,7 @@
                 font-style: bold;
             }
 
-            td {
+            #table_home td {
                 border-top: 0 !important;
                 font-size: 1rem !important;
             }
@@ -54,11 +54,11 @@
                 background-color: transparent !important;
             }
 
-            #dataTable_filter label {
+            #table_home #dataTable_filter label {
                 width: 100%;
             }
 
-            #dataTable_filter label input {
+            #table_home #dataTable_filter label input {
                 width: 100%;
                 margin: 0;
                 height: calc(2.75rem + 2px) !important;
@@ -71,7 +71,7 @@
                 border: 1px solid rgba(0, 0, 0, .05) !important;
             }
 
-            #dataTable_wrapper .row .col-sm-12 {
+            #table_home #dataTable_wrapper .row .col-sm-12 {
                 padding: 0 !important;
             }
 
@@ -101,6 +101,12 @@
 
             .floating-btn:active{
                 background: #324cdd;
+            }
+
+            .table-wrap td {
+                word-break: break-word;
+                vertical-align: top;
+                white-space: normal !important;
             }
         </style>
 

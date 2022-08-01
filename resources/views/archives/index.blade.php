@@ -31,8 +31,8 @@
                         </div>  
                     @endif
 
-                    <div class="table-responsive px-4 mb-3 mt-5">
-                        <table id="dataTable" class="table align-items-center table-flush">
+                    <div class="table-responsive px-4 mb-3">
+                        <table id="dataTable" class="table align-items-center table-flush table-wrap">
                             <thead class="thead-light">
                                 <tr>
                                     <th scope="col text-center">Barcode</th>
@@ -180,14 +180,14 @@
                 aaSorting: [],
                 ajax: '/json-archives',
                 columns: [
-                    {data: 'barcode_number', name: 'barcode_number', defaultContent: "[No Data]"},
-                    {data: 'condition.name', name: 'condition.name', defaultContent: "[No Data]"},
-                    {data: 'type.name', name: 'type.name', defaultContent: "[No Data]"},
-                    {data: 'sk_number', name: 'sk_number', defaultContent: "[No Data]"},
-                    {data: 'name', name: 'name', defaultContent: "[No Data]"},
-                    {data: 'kelurahan', name: 'kelurahan', defaultContent: "[No Data]"},
-                    {data: 'user.name', name: 'user.name', defaultContent: "[No Data]"},
-                    {data: 'edited_by.name', name: 'edited_by.name', defaultContent: "[No Data]"},
+                    {data: 'barcode_number', name: 'barcode_number', defaultContent: "No Data"},
+                    {data: 'condition.name', name: 'condition.name', defaultContent: "No Data"},
+                    {data: 'type.name', name: 'type.name', defaultContent: "No Data"},
+                    {data: 'sk_number', name: 'sk_number', defaultContent: "No Data"},
+                    {data: 'name', name: 'name', defaultContent: "No Data"},
+                    {data: 'kelurahan', name: 'kelurahan', defaultContent: "No Data"},
+                    {data: 'user.name', name: 'user.name', defaultContent: "No Data"},
+                    {data: 'edited_by.name', name: 'edited_by.name', defaultContent: "No Data"},
                     {data: 'action', name: 'Action', 'searchable': false}
                 ],
                 language: {

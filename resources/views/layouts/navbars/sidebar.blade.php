@@ -87,6 +87,11 @@
                         <i class="ni ni-single-02 text-primary"></i> {{ __('User') }}
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ $title=='logs' ? 'active font-weight-bold' : '' }}" href="{{ route('log.index') }}">
+                        <i class="ni ni-archive-2 text-primary"></i> {{ __('Archive Logs') }}
+                    </a>
+                </li>
             </ul>
             @else
             <ul class="navbar-nav">
