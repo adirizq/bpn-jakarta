@@ -26,15 +26,15 @@ use Illuminate\Support\Facades\Hash;
 */
 
 Route::get('/', function () {
-    return redirect('login');
+	return redirect('login');
 });
 
 Route::any('/register', function () {
-    return redirect('login');
+	return redirect('login');
 });
 
 Route::any('/password/{any}', function () {
-    return redirect('login');
+	return redirect('login');
 })->where('any', '(.*)?');
 
 Auth::routes();
@@ -47,7 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/getDistricts/{id}', [AreaController::class, 'getDistricts']);
 	Route::get('/getVillages/{id}', [AreaController::class, 'getVillages']);
 
-	Route::resource('archive', ArchiveController::class)->except('create', 'show');
+	Route::resource('archive', ArchiveController::class)->except('create');
 	Route::get('json-archives', [ArchiveController::class, 'jsonArchives'])->name('json_archive');
 	Route::get('json-archives-member', [HomeController::class, 'jsonArchives'])->name('json_archive_member');
 });
@@ -68,6 +68,3 @@ Route::group(['middleware' => 'admin'], function () {
 	Route::resource('condition', ConditionController::class)->except('create', 'edit', 'show');
 	Route::resource('log', LogController::class)->except('create', 'show', 'edit', 'update', 'destroy');
 });
-
-
-

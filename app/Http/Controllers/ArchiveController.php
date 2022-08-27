@@ -10,6 +10,8 @@ use App\Models\RightType;
 use App\Models\ScanStatus;
 use App\Models\PhysicalStatus;
 use App\Models\User;
+use App\Models\ViewArchiveData;
+use App\Models\ViewArchiveModel;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -91,7 +93,7 @@ class ArchiveController extends Controller
         ];
 
         $archive = Archive::create($validatedData);
-        if($archive) {
+        if ($archive) {
             Log::create($log);
         }
 
@@ -106,7 +108,8 @@ class ArchiveController extends Controller
      */
     public function show(Archive $archive)
     {
-        //
+        $archive = Archive::with(['type:id,name', 'rightType:id,name', 'scanStatus:id,name', 'physicalStatus:id,name', 'condition:id,name', 'editedBy:id,name',  'user:id,name'])->where('id', $archive->id)->get();
+        return $archive->toJson();
     }
 
     /**
@@ -198,24 +201,22 @@ class ArchiveController extends Controller
         $updatedArchive = Archive::find($archive->id);
 
         foreach ($archive->getAttributes() as $key => $value) {
-            if($value != $updatedArchive->$key) {
-                if($key != 'updated_at'){
+            if ($value != $updatedArchive->$key) {
+                if ($key != 'updated_at') {
                     $log['detail'] .= ' [' . $key . ': ' . $value . '  >  ' . $updatedArchive->$key . '] ';
                 }
             }
         };
 
-        if($status) {
+        if ($status) {
             Log::create($log);
         }
 
-        if(auth()->user()->role == 0){
+        if (auth()->user()->role == 0) {
             return redirect()->route('home')->with('success', 'Archive successfully edited');
         } else {
             return redirect()->route('archive.index')->with('success', 'Archive successfully edited');
         }
-
-        
     }
 
     /**
@@ -236,45 +237,24 @@ class ArchiveController extends Controller
 
         $success = Archive::destroy($archive->id);
 
-        $success = $archive->delete(); 
+        $success = $archive->delete();
 
-        if($success) {
+        if ($success) {
             Log::create($log);
         }
 
         return back()->with('success', 'Archive successfully deleted');
     }
 
-
-    public function jsonArchives() {
-        $archives = Archive::latest()->with(['type:id,name', 'rightType:id,name', 'scanStatus:id,name', 'physicalStatus:id,name', 'condition:id,name', 'editedBy:id,name',  'user:id,name'])->get();
+    public function jsonArchives()
+    {
+        $archives = ViewArchiveData::all();
 
         $dataTables = datatables()->of($archives)
-            ->addColumn('action', function($archives) {
-                $btn = "<a href='" . route('archive.edit', $archives->id) . "'  class='btn btn-sm btn-warning'>Edit</a>";
-                $btn .= "
-                    <button type='button' data-toggle='modal' class='btn btn-sm btn-info mt-2' data-target='#detailModal' 
-                        data-barcode='" . checkNull($archives->barcode_number) . "' 
-                        data-rack='" . checkNull($archives->rack_location) . "' 
-                        data-type='" . checkNullCategory($archives->type) . "' 
-                        data-sk='" . checkNull($archives->sk_number) . "' 
-                        data-name='" . checkNull($archives->name) . "' 
-                        data-address='" . checkNull($archives->address) . "' 
-                        data-provinsi='" . checkNull($archives->provinsi) . "' 
-                        data-kab='" . checkNull($archives->kab_kota) . "' 
-                        data-kecamatan='" . checkNull($archives->kecamatan) . "' 
-                        data-kelurahan='" . checkNull($archives->kelurahan) . "' 
-                        data-right='" . checkNullCategory($archives->rightType) . "' 
-                        data-scan='" . checkNullCategory($archives->scanStatus) . "' 
-                        data-physical='" . checkNullCategory($archives->physicalStatus) . "' 
-                        data-condition='" . checkNullCategory($archives->condition) . "' 
-                        data-description='" . checkNull($archives->description) . "' 
-                        data-user='" . checkNullCategory($archives->user) . "' 
-                        data-edited='" . checkNullCategory($archives->editedBy) . "' 
-                        data-created='" . checkNull($archives->created_at->toDateString()) . "'>Show Detail
-                    </button>
-                ";
-                
+            ->addColumn('action', function ($archives) {
+                $btn = "<a href='" . route('archive.edit', $archives->id) . "'  target='_blank' class='btn btn-sm btn-warning'><svg xmlns='http://www.w3.org/2000/svg' width='1.5em' height='1.5em' preserveAspectRatio='xMidYMid met' viewBox='0 0 24 24'><path fill='white' d='m18.988 2.012l3 3L19.701 7.3l-3-3zM8 16h3l7.287-7.287l-3-3L8 13z'/><path fill='white' d='M19 19H8.158c-.026 0-.053.01-.079.01c-.033 0-.066-.009-.1-.01H5V5h6.847l2-2H5c-1.103 0-2 .896-2 2v14c0 1.104.897 2 2 2h14a2 2 0 0 0 2-2v-8.668l-2 2V19z'/></svg></a>";
+                $btn .= "<button type='button' data-toggle='modal' data-target='#detailModal' data-id='" . $archives->id . "' class='btn btn-sm btn-info'><svg xmlns='http://www.w3.org/2000/svg' width='1.5em' height='1.5em' preserveAspectRatio='xMidYMid meet' viewBox='0 0 32 32'><circle cx='16' cy='16' r='4' fill='white'/><path fill='white' d='M30.94 15.66A16.69 16.69 0 0 0 16 5A16.69 16.69 0 0 0 1.06 15.66a1 1 0 0 0 0 .68A16.69 16.69 0 0 0 16 27a16.69 16.69 0 0 0 14.94-10.66a1 1 0 0 0 0-.68ZM16 22.5a6.5 6.5 0 1 1 6.5-6.5a6.51 6.51 0 0 1-6.5 6.5Z'/></svg></button>";
+
                 return $btn;
             })
             ->rawColumns(['action'])
@@ -285,19 +265,20 @@ class ArchiveController extends Controller
 
 
     //API
-    public function apiIndex(){
+    public function apiIndex()
+    {
 
         $userId = request('userId');
 
         $archives = null;
 
-        if (isset($userId)){
+        if (isset($userId)) {
             $archives = Archive::with(['type', 'condition'])->where('user_id', $userId)->select('id', 'barcode_number', 'condition_id', 'type_id', 'sk_number', 'name', 'kelurahan',  'created_at')->get();
         } else {
             $archives = Archive::with(['type', 'condition'])->select('id', 'barcode_number', 'condition_id', 'type_id', 'sk_number', 'name', 'kelurahan',  'created_at')->get();
         }
 
-        foreach($archives as $archive) {
+        foreach ($archives as $archive) {
             $archive->sk_number = checkNull($archive->sk_number);
             $archive->name = checkNull($archive->name);
             $archive->kelurahan = checkNull($archive->kelurahan);
@@ -309,30 +290,32 @@ class ArchiveController extends Controller
         return $archives;
     }
 
-    public function apiShow(Archive $archive){
+    public function apiShow(Archive $archive)
+    {
 
-        $archive->barcode_number = checkNull($archive->barcode_number); 
-        $archive->rack_location = checkNull($archive->rack_location); 
-        $archive->type_name = checkNullCategory($archive->type); 
-        $archive->sk_number = checkNull($archive->sk_number); 
-        $archive->name = checkNull($archive->name); 
-        $archive->address = checkNull($archive->address); 
-        $archive->provinsi = checkNull($archive->provinsi); 
-        $archive->kab_kota = checkNull($archive->kab_kota); 
-        $archive->kecamatan = checkNull($archive->kecamatan); 
-        $archive->kelurahan = checkNull($archive->kelurahan); 
-        $archive->right_type_name = checkNullCategory($archive->rightType); 
-        $archive->scan_status_name = checkNullCategory($archive->scanStatus); 
-        $archive->physical_status_name = checkNullCategory($archive->physicalStatus); 
-        $archive->condition_name = checkNullCategory($archive->condition); 
-        $archive->description = checkNull($archive->description); 
-        $archive->user_name = checkNullCategory($archive->user); 
+        $archive->barcode_number = checkNull($archive->barcode_number);
+        $archive->rack_location = checkNull($archive->rack_location);
+        $archive->type_name = checkNullCategory($archive->type);
+        $archive->sk_number = checkNull($archive->sk_number);
+        $archive->name = checkNull($archive->name);
+        $archive->address = checkNull($archive->address);
+        $archive->provinsi = checkNull($archive->provinsi);
+        $archive->kab_kota = checkNull($archive->kab_kota);
+        $archive->kecamatan = checkNull($archive->kecamatan);
+        $archive->kelurahan = checkNull($archive->kelurahan);
+        $archive->right_type_name = checkNullCategory($archive->rightType);
+        $archive->scan_status_name = checkNullCategory($archive->scanStatus);
+        $archive->physical_status_name = checkNullCategory($archive->physicalStatus);
+        $archive->condition_name = checkNullCategory($archive->condition);
+        $archive->description = checkNull($archive->description);
+        $archive->user_name = checkNullCategory($archive->user);
         $archive->created_at_date = checkNull($archive->created_at->toDateString());
 
         return $archive;
     }
 
-    public function apiStore(){
+    public function apiStore()
+    {
         request()->validate([
             'barcode_number' => 'required|numeric',
             'type_id' => 'required',
@@ -369,14 +352,15 @@ class ArchiveController extends Controller
             'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
         ];
 
-        if($archive) {
+        if ($archive) {
             Log::create($log);
         }
-    
+
         return $archive;
     }
 
-    public function apiDestroy(Archive $archive){
+    public function apiDestroy(Archive $archive)
+    {
         $log = [
             'barcode_number' => $archive->barcode_number,
             'sk_number' => $archive->sk_number,
@@ -385,9 +369,9 @@ class ArchiveController extends Controller
             'actor_name' => '[ID: ' . auth()->user()->id . '] ' . auth()->user()->name
         ];
 
-        $success = $archive->delete(); 
+        $success = $archive->delete();
 
-        if($success) {
+        if ($success) {
             Log::create($log);
         }
 
